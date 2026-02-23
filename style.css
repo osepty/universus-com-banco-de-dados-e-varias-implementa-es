@@ -1,0 +1,785 @@
+body {
+    /* Cor de fundo preta caso a imagem demore a carregar */
+    background-color: #000;
+
+    /* O link direto da imagem que você escolheu */
+    /* Adicionei um degradê bem suave (0.3) para as estrelas não brigarem com o seu texto */
+    background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), 
+                      url('https://images.unsplash.com/photo-1475274047050-1d0c0975c63e?q=80&w=2072&auto=format&fit=crop');
+    
+    background-size: cover;           /* Faz a imagem cobrir a tela toda */
+    background-attachment: fixed;     /* A imagem fica parada enquanto você rola a página */
+    background-position: center;      /* Centraliza o "céu" na tela */
+    
+    /* Configurações de alinhamento que já tínhamos */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: white;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.container-principal {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+    width: 95%;
+    max-width: 1200px;
+}
+
+/* Efeito de Vidro (Glassmorphism) */
+.glass-card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 30px;
+    padding: 30px;
+    width: 350px;
+    text-align: center;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+    transition: transform 0.3s ease;
+}
+
+.glass-card:hover {
+    transform: translateY(-5px);
+}
+
+.caixa-selecao select {
+    background-color: #FFEA00;
+    color: #333;
+    border: none;
+    padding: 12px;
+    border-radius: 15px;
+    width: 100%;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.espaco-imagem {
+    height: 180px;
+    margin: 25px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.logo-facul {
+    max-width: 100%;
+    max-height: 100%;
+    filter: drop-shadow(0 0 15px rgba(255,255,255,0.3));
+}
+
+.placeholder {
+    border: 2px dashed rgba(255, 255, 255, 0.3);
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: rgba(255,255,255,0.3);
+    border-radius: 15px;
+}
+
+.detalhes {
+    background: rgba(0,0,0,0.4);
+    padding: 15px;
+    border-radius: 15px;
+    text-align: left;
+    margin-bottom: 20px;
+}
+
+.detalhes p {
+    margin: 10px 0;
+    font-size: 14px;
+}
+
+.vs-texto {
+    font-size: 120px;
+    margin: 0;
+    font-weight: 900;
+    color: transparent;
+    -webkit-text-stroke: 3px #FF3D00;
+    text-shadow: 0 0 30px rgba(255, 61, 0, 0.5);
+}
+
+.notas-barra {
+    font-size: 18px;
+    color: #aaa;
+    letter-spacing: 3px;
+}
+
+.btn-menu {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    background: rgba(255,255,255,0.2);
+    border: none;
+    color: white;
+    padding: 10px 25px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.btn-comentarios {
+    background: #eee;
+    color: #333;
+    border: none;
+    padding: 10px 30px;
+    border-radius: 25px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.btn-comentarios:hover {
+    background: #FFEA00;
+}
+
+
+.btn-fechar {
+    align-self: flex-end;
+    background: none;
+    border: none;
+    color: rgba(255,255,255,0.5);
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-bottom: 10px;
+    transition: color 0.3s;
+}
+
+.btn-fechar:hover {
+    color: #FF3D00;
+}
+
+.area-comentarios {
+    flex-grow: 1; /* Faz a área de comentários crescer e ocupar o espaço vazio */
+    overflow-y: auto; /* Adiciona barra de rolagem se tiver muitos comentários */
+    margin-bottom: 20px;
+    text-align: left;
+    padding-right: 10px;
+}
+
+/* Estilo para a barrinha de rolagem ficar bonita */
+.area-comentarios::-webkit-scrollbar {
+    width: 6px;
+}
+.area-comentarios::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+}
+
+.area-comentarios p {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    font-size: 14px;
+    border-left: 3px solid #FFEA00;
+}
+
+.add-comentario {
+    display: flex;
+    gap: 10px;
+}
+
+.add-comentario input {
+    flex-grow: 1;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(0,0,0,0.5);
+    color: white;
+    outline: none;
+}
+
+.add-comentario input::placeholder {
+    color: rgba(255,255,255,0.4);
+}
+
+.add-comentario button {
+    padding: 10px 20px;
+    border-radius: 10px;
+    border: none;
+    background: #FFEA00;
+    color: #333;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.add-comentario button:active {
+    transform: scale(0.95);
+}
+/* ================= ESTILOS DAS SIDEBARS DE COMENTÁRIOS ================= */
+.sidebar {
+    position: fixed;
+    top: 0;
+    height: 100vh; /* Ocupa a altura toda da tela */
+    width: 350px;
+    background: rgba(15, 15, 15, 0.85); /* Fundo escuro com um pouco de transparência */
+    backdrop-filter: blur(20px);
+    border-radius: 0;
+    padding: 30px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.4s ease-in-out; /* Animação de deslizar suave */
+    z-index: 1000; /* Garante que fique por cima de tudo */
+}
+
+/* Posiciona e esconde a sidebar da esquerda (jogando ela pra fora da tela) */
+.sidebar-esquerda {
+    left: 0;
+    border-right: 1px solid rgba(255,255,255,0.1);
+    transform: translateX(-100%);
+}
+
+/* Quando ganha a classe 'ativa', volta para a posição original */
+.sidebar-esquerda.ativa {
+    transform: translateX(0);
+}
+
+/* Posiciona e esconde a sidebar da direita */
+.sidebar-direita {
+    right: 0;
+    border-left: 1px solid rgba(255,255,255,0.1);
+    transform: translateX(100%);
+}
+
+/* Quando ganha a classe 'ativa', volta para a posição original */
+.sidebar-direita.ativa {
+    transform: translateX(0);
+}
+
+.sidebar h2 {
+    margin-top: 0;
+    font-size: 20px;
+    color: #FFEA00;
+}
+
+.btn-fechar {
+    align-self: flex-end;
+    background: none;
+    border: none;
+    color: rgba(255,255,255,0.5);
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-bottom: 10px;
+    transition: color 0.3s;
+}
+
+.btn-fechar:hover {
+    color: #FF3D00;
+}
+
+.area-comentarios {
+    flex-grow: 1; /* Faz a área de comentários crescer e ocupar o espaço vazio */
+    overflow-y: auto; /* Adiciona barra de rolagem se tiver muitos comentários */
+    margin-bottom: 20px;
+    text-align: left;
+    padding-right: 10px;
+}
+
+/* Estilo para a barrinha de rolagem ficar bonita */
+.area-comentarios::-webkit-scrollbar {
+    width: 6px;
+}
+.area-comentarios::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+}
+
+.area-comentarios p {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    font-size: 14px;
+    border-left: 3px solid #FFEA00;
+}
+
+.add-comentario {
+    display: flex;
+    gap: 10px;
+}
+
+.add-comentario input {
+    flex-grow: 1;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(0,0,0,0.5);
+    color: white;
+    outline: none;
+}
+
+.add-comentario input::placeholder {
+    color: rgba(255,255,255,0.4);
+}
+
+.add-comentario button {
+    padding: 10px 20px;
+    border-radius: 10px;
+    border: none;
+    background: #FFEA00;
+    color: #333;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.add-comentario button:active {
+    transform: scale(0.95);
+}
+
+/* ==========================================================================
+   NOVOS ESTILOS PARA O MENU DE TELA CHEIA E PÁGINA DE LOGIN
+   ========================================================================== */
+
+/* --- 1. Ajustes nos Botões de Menu Existentes --- */
+.btn-menu-topo,.btn-voltar-home {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    background: rgba(255,255,255,0.1); /* Um pouco mais sutil para combinar */
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 10px 25px;
+    border-radius: 10px;
+    cursor: pointer;
+    z-index: 900; /* Fica acima do conteúdo normal */
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+.btn-menu-topo:hover,.btn-voltar-home:hover {
+    background: rgba(255,255,255,0.2);
+}
+
+
+/* --- 2. O Overlay do Menu Principal (A Animação acontece aqui) --- */
+.menu-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    /* Fundo escuro e muito embaçado para focar no menu */
+    background: rgba(10, 10, 20, 0.95);
+    backdrop-filter: blur(30px);
+    z-index: 2000; /* Fica acima de TUDO, inclusive sidebars */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    
+    /* A MÁGICA DA ANIMAÇÃO */
+    transform: translateY(-100%); /* Começa escondido lá em cima */
+    transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1); /* Ease-out suave */
+}
+
+/* Quando a classe 'ativa' é adicionada pelo JS, ele desce */
+.menu-overlay.ativa {
+    transform: translateY(0);
+}
+
+.menu-botoes-container {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    width: 100%;
+    max-width: 400px;
+    padding: 20px;
+}
+
+/* Estilo dos botões grandes do menu (reaproveitando o glass-card) */
+.menu-btn-grande.glass-card {
+    width: 100%;
+    padding: 25px;
+    font-size: 24px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none; /* Para o link do Login */
+    display: block; /* Para o link se comportar como botão */
+    color: white;
+    background: rgba(255, 255, 255, 0.08); /* Um pouco mais claro que o padrão */
+}
+
+.menu-btn-grande.glass-card:hover {
+    background: rgba(255, 234, 0, 0.15); /* Amarelo sutil ao passar o mouse */
+    border-color: #FFEA00;
+    transform: scale(1.02) translateY(-5px); /* Leve aumento */
+}
+
+.btn-fechar-menu-topo {
+    position: absolute;
+    top: 30px;
+    right: 30px;
+    background: none;
+    border: none;
+    color: rgba(255,255,255,0.6);
+    font-size: 30px;
+    cursor: pointer;
+    transition: color 0.3s;
+}
+.btn-fechar-menu-topo:hover { color: #FF3D00; }
+
+.menu-footer {
+    position: absolute;
+    bottom: 30px;
+    right: 40px;
+    font-size: 50px;
+    font-weight: bold;
+    color: rgba(255,255,255,0.1);
+    border: 3px solid rgba(255,255,255,0.1);
+    padding: 10px 20px;
+    border-radius: 15px;
+}
+
+
+/* ... outros estilos ... */
+
+/* --- 3. Estilos Específicos da Página de Login (login.php) --- */
+
+/* Ajuste para centralizar o login na tela */
+.login-body {
+    /* O body já tem as propriedades de centralização do seu CSS original,
+       então só precisamos garantir que ele não quebre */
+    flex-direction: column;
+}
+
+.btn-voltar-home {
+    position: absolute;
+    top: 30px;
+    left: 30px;
+    text-decoration: none;
+    color: rgba(255,255,255,0.7);
+    font-weight: bold;
+    transition: color 0.3s;
+}
+.btn-voltar-home:hover { color: #FFEA00; }
+
+.login-container.glass-card {
+    width: 400px;
+    /* ALTERAÇÃO 1: Reduzi o padding superior e inferior de 50px para 40px */
+    padding: 40px;
+    text-align: center;
+}
+
+.login-container h1 {
+    margin: 0;
+    font-size: 36px;
+}
+
+.subtitle {
+    color: rgba(255,255,255,0.6);
+    margin-top: 10px;
+    /* ALTERAÇÃO 2: Reduzi a margem inferior de 40px para 30px */
+    margin-bottom: 30px;
+    font-size: 14px;
+    letter-spacing: 1px;
+}
+
+/* ... o restante do CSS para .input-group e .btn-login-action continua igual ... */
+.input-group {
+    text-align: left;
+    margin-bottom: 25px;
+}
+
+.input-group label {
+    display: block;
+    font-size: 12px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+    color: rgba(255,255,255,0.8);
+}
+
+.input-group input {
+    width: 100%;
+    padding: 15px;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.2);
+    background: rgba(0,0,0,0.4);
+    color: white;
+    outline: none;
+    box-sizing: border-box;
+    transition: border-color 0.3s;
+}
+
+.input-group input:focus {
+    border-color: #FFEA00;
+}
+
+.btn-login-action {
+    width: 100%;
+    padding: 15px;
+    margin-top: 20px;
+    border-radius: 10px;
+    border: none;
+    background: #FFEA00;
+    color: #111;
+    font-weight: 900;
+    font-size: 16px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: transform 0.2s, background-color 0.3s;
+}
+
+.btn-login-action:hover {
+    background-color: #e6d200;
+    transform: translateY(-2px);
+}
+/* --- Ajuste nos botões do Menu Principal --- */
+.menu-btn-grande.glass-card {
+    /* Reseta a largura fixa de 350px que vem da classe .glass-card original */
+    width: 100% !important; 
+    max-width: 350px; /* Define um limite para não esticar demais em telas grandes */
+    
+    padding: 20px;
+    font-size: 24px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    
+    /* A MÁGICA: Transforma tudo (a e button) em flexbox centralizado */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+    /* Garante que o padding não "empurre" a largura para fora */
+    box-sizing: border-box; 
+    
+    /* Remove estilos padrão de botão que podem causar diferença */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.08);
+    color: white;
+    margin: 0 auto; /* Centraliza o botão dentro do container */
+}
+
+.menu-btn-grande.glass-card:hover {
+    background: rgba(255, 234, 0, 0.15);
+    border-color: #FFEA00;
+    transform: scale(1.05);
+}
+
+/* Garante que o container alinhe os itens ao centro */
+.menu-botoes-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+    align-items: center; /* Centraliza os botões horizontalmente */
+}
+/* --- 4. Estilos da Página Sobre (Universus) --- */
+
+.sobre-container.glass-card {
+    width: 90%;
+    max-width: 800px; /* Mais largo que o login para caber melhor o texto */
+    padding: 50px;
+    text-align: justify; /* Deixa o texto retinho nas laterais */
+    line-height: 1.8; /* Aumenta o espaço entre as linhas para facilitar a leitura */
+}
+
+.sobre-container h2 {
+    text-align: center;
+    margin-top: 0;
+    margin-bottom: 30px;
+    font-size: 32px;
+    color: #FFEA00; /* Destaque amarelo no título */
+    letter-spacing: 2px;
+}
+
+.sobre-container p {
+    color: rgba(255, 255, 255, 0.85); /* Branco levemente transparente */
+    font-size: 16px;
+    margin-bottom: 20px;
+}
+
+/* ================= PAINEL USUÁRIO ================= */
+
+.painel-container {
+    width: 100%;
+    max-width: 500px;
+    padding: 40px;
+    border-radius: 25px;
+    background: rgba(255, 255, 255, 0.07);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(255,255,255,0.1);
+    box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+    text-align: center;
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+.painel-container h1 {
+    margin-top: 0;
+    color: #FFEA00;
+    letter-spacing: 2px;
+}
+
+.painel-info {
+    text-align: left;
+    margin-top: 25px;
+}
+
+.painel-info p {
+    background: rgba(0,0,0,0.4);
+    padding: 15px;
+    border-radius: 12px;
+    margin-bottom: 15px;
+    border-left: 4px solid #FFEA00;
+}
+
+.btn-logout {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 12px 25px;
+    border-radius: 25px;
+    background: #FF3D00;
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    transition: transform 0.2s, background 0.3s;
+}
+
+.btn-logout:hover {
+    background: #ff5722;
+    transform: scale(1.05);
+}
+
+/* animação */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+/* Botão topo esquerdo padrão sistema */
+
+.btn-topo-esquerdo {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    padding: 10px 20px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background 0.3s, transform 0.2s;
+    z-index: 999;
+}
+
+.btn-topo-esquerdo:hover {
+    background: rgba(255,255,255,0.25);
+    transform: scale(1.05);
+}
+/* Botão fixo inferior esquerdo (Logoff) */
+
+.btn-inferior-esquerdo {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    padding: 10px 20px;
+    border-radius: 15px;
+    background: rgba(255, 61, 0, 0.85);
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    transition: transform 0.2s, background 0.3s;
+    z-index: 999;
+}
+
+.btn-inferior-esquerdo:hover {
+    background: #ff5722;
+    transform: scale(1.08);
+}
+/* ================= USUÁRIO LOGADO (CANTO SUPERIOR DIREITO) ================= */
+
+.usuario-logado {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 10px 20px;
+    border-radius: 20px;
+    background: rgba(255,255,255,0.12);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: #FFEA00;
+    font-weight: bold;
+    letter-spacing: 1px;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+    animation: fadeInUser 0.5s ease-in-out;
+    z-index: 999;
+}
+
+@keyframes fadeInUser {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+/* ================= COMENTÁRIOS DINÂMICOS ================= */
+
+.area-comentario-form textarea {
+    width: 100%;
+    height: 80px;
+    padding: 12px;
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.2);
+    background: rgba(0,0,0,0.5);
+    color: white;
+    resize: none;
+    margin-bottom: 10px;
+}
+
+.area-comentario-form button {
+    padding: 10px 20px;
+    border-radius: 15px;
+    border: none;
+    background: #FFEA00;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.lista-comentarios {
+    margin-top: 25px;
+}
+
+.comentario-item {
+    background: rgba(255,255,255,0.05);
+    padding: 15px;
+    border-radius: 15px;
+    margin-bottom: 15px;
+    border-left: 4px solid #FFEA00;
+}
+
+.comentario-item strong {
+    color: #FFEA00;
+}
+
+.comentario-item small {
+    display: block;
+    font-size: 12px;
+    color: #aaa;
+    margin-bottom: 8px;
+}
