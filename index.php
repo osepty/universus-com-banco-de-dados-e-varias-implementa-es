@@ -5,6 +5,7 @@ $instituicoes = [];
 $sql = "SELECT * FROM instituicao";
 $result = $conn->query($sql);
 
+
 while($row = $result->fetch_assoc()){
     $instituicoes[] = $row;
 }
@@ -30,24 +31,67 @@ if (isset($_POST["enviar_comentario"]) && isset($_SESSION["usuario_id"])) {
 $f1 = null;
 $f2 = null;
 
+// Busca Faculdade 1 com a média calculada dinamicamente
 if(isset($_POST['faculdade1']) && $_POST['faculdade1'] != ""){
     $id1 = $_POST['faculdade1'];
 
-    $stmt = $conn->prepare("SELECT * FROM instituicao WHERE id = ?");
+    $sql1 = "SELECT i.*, 
+                    COUNT(a.nota) AS total_votos, 
+                    COALESCE(AVG(a.nota), 0) AS media_notas 
+             FROM instituicao i 
+             LEFT JOIN avaliacoes a ON i.id = a.faculdade_id 
+             WHERE i.id = ? 
+             GROUP BY i.id";
+             
+    $stmt = $conn->prepare($sql1);
     $stmt->bind_param("i", $id1);
     $stmt->execute();
     $f1 = $stmt->get_result()->fetch_assoc();
     $stmt->close();
 }
 
+// Busca Faculdade 2 com a média calculada dinamicamente
 if(isset($_POST['faculdade2']) && $_POST['faculdade2'] != ""){
     $id2 = $_POST['faculdade2'];
 
-    $stmt = $conn->prepare("SELECT * FROM instituicao WHERE id = ?");
+    $sql2 = "SELECT i.*, 
+                    COUNT(a.nota) AS total_votos, 
+                    COALESCE(AVG(a.nota), 0) AS media_notas 
+             FROM instituicao i 
+             LEFT JOIN avaliacoes a ON i.id = a.faculdade_id 
+             WHERE i.id = ? 
+             GROUP BY i.id";
+             
+    $stmt = $conn->prepare($sql2);
     $stmt->bind_param("i", $id2);
     $stmt->execute();
     $f2 = $stmt->get_result()->fetch_assoc();
     $stmt->close();
+}
+
+// Lógica para salvar a avaliação - AJUSTADA
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['votar']) && isset($_SESSION['usuario_id'])) {
+    
+    // Verificamos se a nota e o ID da faculdade foram realmente enviados
+    if (isset($_POST['nota']) && isset($_POST['faculdade_id'])) {
+        $usuario_id = $_SESSION['usuario_id'];
+        $faculdade_id = $_POST['faculdade_id'];
+        $nota = $_POST['nota'];
+
+        $sql = "INSERT INTO avaliacoes (usuario_id, faculdade_id, nota) 
+                VALUES (?, ?, ?) 
+                ON DUPLICATE KEY UPDATE nota = ?";
+        
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("iiii", $usuario_id, $faculdade_id, $nota, $nota);
+        
+        if($stmt->execute()){
+            $stmt->close();
+            header("Location: index.php");
+            exit();
+        }
+        $stmt->close();
+    }
 }
 ?>
 
@@ -91,15 +135,49 @@ if(isset($_POST['faculdade2']) && $_POST['faculdade2'] != ""){
     <div class="placeholder">LOGO INSTITUIÇÃO</div>
 <?php endif; ?>
 </div>
+<?php if (isset($_SESSION['usuario_id']) && $f1): ?>
+    <div class="container-estrelas">
+    <p style="font-size: 0.8em; color: #ccc; margin-bottom: 5px;">Avalie esta instituição</p>
+    
+    <div class="rating">
+        <input type="radio" name="nota" value="5" id="f1-5" onchange="this.form.submit()"><label for="f1-5"></label>
+        <input type="radio" name="nota" value="4" id="f1-4" onchange="this.form.submit()"><label for="f1-4"></label>
+        <input type="radio" name="nota" value="3" id="f1-3" onchange="this.form.submit()"><label for="f1-3"></label>
+        <input type="radio" name="nota" value="2" id="f1-2" onchange="this.form.submit()"><label for="f1-2"></label>
+        <input type="radio" name="nota" value="1" id="f1-1" onchange="this.form.submit()"><label for="f1-1"></label>
+    </div>
+
+    <input type="hidden" name="faculdade_id" value="<?php echo $f1['id']; ?>">
+    <input type="hidden" name="votar" value="1">
+</div>
+<?php endif; ?>
             <div class="detalhes">
-                <p>⭐ Nota ENADE: <strong><?php echo $f1 ? $f1['nota_enade'] : "-"; ?></strong></p>
-<p>🏛 Nota MEC: <strong><?php echo $f1 ? $f1['nota_mec'] : "-"; ?></strong></p>
-<p>💰 Mensalidade: 
-<strong>
-<?php echo $f1 ? "R$ " . number_format($f1['mensalidade_media'], 2, ',', '.') : "-"; ?>
-</strong>
-</p>
+    <?php if ($f1 && $f1['total_votos'] > 0): ?>
+        <?php 
+            $media = round($f1['media_notas'], 1); // Usando a nova coluna do SQL
+            $votos = $f1['total_votos'];
+            $votos_txt = ($votos >= 1000) ? round($votos/1000, 1)."K" : $votos;
+        ?>
+        <div class="rating-display" style="display: flex; align-items: center; gap: 8px; margin-bottom: 15px;">
+            <div class="stars-fixed" style="color: #ff6600; font-size: 1.3em; letter-spacing: -2px;">
+                <?php
+                for ($i = 1; $i <= 5; $i++) {
+                    echo ($i <= round($media)) ? '★' : '<span style="color: #444;">★</span>';
+                }
+                ?>
             </div>
+            <span style="font-size: 14px; color: #fff;">
+                Classificação média: <strong><?php echo $media; ?></strong> <span style="color: #aaa;">(<?php echo $votos_txt; ?>)</span>
+            </span>
+        </div>
+    <?php else: ?>
+        <p style="font-size: 13px; color: #aaa; margin-bottom: 15px;">Nenhuma avaliação ainda.</p>
+    <?php endif; ?>
+
+    <p>⭐ Nota ENADE: <strong><?php echo $f1 ? $f1['nota_enade'] : "-"; ?></strong></p>
+    <p>🏛 Nota MEC: <strong><?php echo $f1 ? $f1['nota_mec'] : "-"; ?></strong></p>
+    <p>💰 Mensalidade: <strong><?php echo $f1 ? "R$ " . number_format($f1['mensalidade_media'], 2, ',', '.') : "-"; ?></strong></p>
+</div>
             <button type="button" class="btn-comentarios" onclick="toggleSidebar('sidebar-esq')">Comentários</button>
         </div>
 
@@ -126,15 +204,49 @@ if(isset($_POST['faculdade2']) && $_POST['faculdade2'] != ""){
     <div class="placeholder">LOGO INSTITUIÇÃO</div>
 <?php endif; ?>
 </div>
-            <div class="detalhes">
-                <p>⭐ Nota ENADE: <strong><?php echo $f2 ? $f2['nota_enade'] : "-"; ?></strong></p>
-<p>🏛 Nota MEC: <strong><?php echo $f2 ? $f2['nota_mec'] : "-"; ?></strong></p>
-<p>💰 Mensalidade: 
-<strong>
-<?php echo $f2 ? "R$ " . number_format($f2['mensalidade_media'], 2, ',', '.') : "-"; ?>
-</strong>
-</p>
+<?php if (isset($_SESSION['usuario_id']) && $f2): ?>
+    <div class="container-estrelas">
+        <p style="font-size: 0.8em; color: #ccc; margin-bottom: 5px;">Avalie esta instituição</p>
+        <form method="POST" class="rating-form">
+            <input type="hidden" name="faculdade_id" value="<?php echo $f2['id']; ?>">
+            <div class="rating">
+                <input type="radio" name="nota" value="5" id="f2-5" onchange="this.form.submit()"><label for="f2-5"></label>
+                <input type="radio" name="nota" value="4" id="f2-4" onchange="this.form.submit()"><label for="f2-4"></label>
+                <input type="radio" name="nota" value="3" id="f2-3" onchange="this.form.submit()"><label for="f2-3"></label>
+                <input type="radio" name="nota" value="2" id="f2-2" onchange="this.form.submit()"><label for="f2-2"></label>
+                <input type="radio" name="nota" value="1" id="f2-1" onchange="this.form.submit()"><label for="f2-1"></label>
             </div>
+            <input type="hidden" name="votar" value="1">
+        </form>
+    </div>
+<?php endif; ?>
+            <div class="detalhes">
+    <?php if ($f2 && $f2['total_votos'] > 0): ?>
+        <?php 
+            $media = round($f2['media_notas'], 1); 
+            $votos = $f2['total_votos'];
+            $votos_txt = ($votos >= 1000) ? round($votos/1000, 1)."K" : $votos;
+        ?>
+        <div class="rating-display" style="display: flex; align-items: center; gap: 8px; margin-bottom: 15px;">
+            <div class="stars-fixed" style="color: #ff6600; font-size: 1.3em; letter-spacing: -2px;">
+                <?php
+                for ($i = 1; $i <= 5; $i++) {
+                    echo ($i <= round($media)) ? '★' : '<span style="color: #444;">★</span>';
+                }
+                ?>
+            </div>
+            <span style="font-size: 14px; color: #fff;">
+                Classificação média: <strong><?php echo $media; ?></strong> <span style="color: #aaa;">(<?php echo $votos_txt; ?>)</span>
+            </span>
+        </div>
+    <?php else: ?>
+        <p style="font-size: 13px; color: #aaa; margin-bottom: 15px;">Nenhuma avaliação ainda.</p>
+    <?php endif; ?>
+
+    <p>⭐ Nota ENADE: <strong><?php echo $f2 ? $f2['nota_enade'] : "-"; ?></strong></p>
+    <p>🏛 Nota MEC: <strong><?php echo $f2 ? $f2['nota_mec'] : "-"; ?></strong></p>
+    <p>💰 Mensalidade: <strong><?php echo $f2 ? "R$ " . number_format($f2['mensalidade_media'], 2, ',', '.') : "-"; ?></strong></p>
+</div>
             <button type="button" class="btn-comentarios" onclick="toggleSidebar('sidebar-dir')">Comentários</button>
         </div>
     </form>
@@ -145,15 +257,12 @@ if(isset($_POST['faculdade2']) && $_POST['faculdade2'] != ""){
         
         <div class="menu-botoes-container">
             <button class="glass-card menu-btn-grande" onclick="toggleMainMenu()">Comparar</button>
-            
             <a href="login.php" class="glass-card menu-btn-grande">Login</a>
+            <a href="cadastro.php" class="glass-card menu-btn-grande">Cadastro</a>
             
-            
-           <a href="cadastro.php" class="glass-card menu-btn-grande">Cadastro</a>
+            <a href="universus.php" class="glass-card menu-btn-grande">Universus</a>
         </div>
-        <div class="menu-footer">U</div>
-        <a href="universus.php" class="glass-card menu-btn-grande">Universus</a>
-        </div>
+        
         <div class="menu-footer">U</div>
     </div>
 
